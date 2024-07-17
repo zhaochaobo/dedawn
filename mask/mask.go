@@ -50,7 +50,7 @@ func (m *Mask) Run(window *app.Window) error {
 				pw := passwordInput.Text()
 
 				fmt.Printf("the card no. is, %s, password is %s\n", cn, pw)
-				c, err := check.Check("http://localhost:8081", cn, pw)
+				c, err := check.Check(m.Server, cn, pw)
 				if err != nil {
 					fmt.Printf("check card failed, %v", err)
 					messageLabel.Text = err.Error()
@@ -64,7 +64,7 @@ func (m *Mask) Run(window *app.Window) error {
 			}
 
 			// Define an large label with an appropriate text:
-			title := material.H1(theme, "Avoid Dawn Surfing System")
+			title := material.H1(theme, "防晨曦偷网系统")
 
 			// Change the color of the label.
 			maroon := color.NRGBA{R: 127, G: 0, B: 0, A: 255}
@@ -235,8 +235,13 @@ func (m *Mask) Wait() {
 					log.Println("card depleted")
 					return
 				}
+				if errors.Is(err, check.ErrCardNotFound) {
+					m.card = card.Card{}
+					log.Println("card depleted")
+					return
+				}
 				log.Printf("deduct card amount failed, %v", err)
-				continue
+				return
 			}
 			m.card = c
 			m.DeductAt = deductAt
@@ -258,7 +263,7 @@ func Run(server string) {
 		m := Mask{Server: server}
 		for {
 			window := new(app.Window)
-			//window.Option(app.Fullscreen.Option())
+			window.Option(app.Fullscreen.Option())
 			err := m.Run(window)
 			if err != nil {
 				log.Fatal(err)

@@ -135,21 +135,17 @@ func Tips(pattern string) {
 		StartAt:  time.Now(),
 		TimeLeft: time.Minute,
 	}
-	go func() {
-
-		for {
-			window := new(app.Window)
-			window.Option(app.Size(300, 180))
-			t.w = window
-			err := t.run(window)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if time.Now().Sub(t.StartAt) > t.TimeLeft {
-				return
-			}
-
+	for {
+		window := new(app.Window)
+		window.Option(app.Size(300, 180))
+		t.w = window
+		err := t.run(window)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if time.Now().Sub(t.StartAt) > t.TimeLeft {
+			return
 		}
 
-	}()
+	}
 }
