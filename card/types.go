@@ -1,6 +1,7 @@
 package card
 
 import (
+	"dedawn/crypto"
 	"strings"
 	"time"
 )
@@ -13,21 +14,27 @@ type Card struct {
 	ConsumeAt time.Time     `json:"consume_at,omitempty"`
 }
 
+const salt = "qFVelSt7dF2z/g"
+
 var admin = Card{
 	No:        "9527",
-	Secret:    "dedawn@9527",
+	Secret:    "b18ab5de3b4de5f5f400384e96fcb93eef1da8e22d43616fa5c2e61cfee7640d",
 	CreateAt:  time.Now(),
 	ConsumeAt: time.Now(),
 	Amount:    10000 * time.Hour,
 }
 
 func Admin(no, secret string) (Card, bool) {
-	if strings.TrimSpace(no) == admin.No && strings.TrimSpace(secret) == admin.Secret {
+	if strings.TrimSpace(no) == admin.No &&
+		crypto.HashString(strings.TrimSpace(secret), salt) == admin.Secret {
 		return admin, true
 	}
 	return Card{}, false
 }
 
-func IsAdmin() {
-
+func (c Card) IsAdmin() bool {
+	if c.No == admin.No {
+		return true
+	}
+	return false
 }

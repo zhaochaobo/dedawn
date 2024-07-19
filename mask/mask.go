@@ -64,7 +64,7 @@ func (m *Mask) Run(window *app.Window) error {
 			}
 
 			// Define an large label with an appropriate text:
-			title := material.H1(theme, "防晨曦偷网系统")
+			title := material.H6(theme, "防晨曦偷网系统")
 
 			// Change the color of the label.
 			maroon := color.NRGBA{R: 127, G: 0, B: 0, A: 255}
@@ -201,7 +201,10 @@ func (m *Mask) Run(window *app.Window) error {
 
 			// Pass the drawing operations to the GPU.
 			e.Frame(gtx.Ops)
+		default:
+			log.Infof("unknown event %+v", e)
 		}
+
 	}
 }
 
@@ -220,7 +223,7 @@ func (m *Mask) Wait() {
 	for {
 		select {
 		case <-ticker.C:
-			if _, ok := card.Admin(m.card.No, m.card.Secret); ok {
+			if m.card.IsAdmin() {
 				continue
 			}
 			deductAt := time.Now()
@@ -263,7 +266,7 @@ func Run(server string) {
 		m := Mask{Server: server}
 		for {
 			window := new(app.Window)
-			window.Option(app.Fullscreen.Option())
+			window.Option(app.Fullscreen.Option(), app.Size(500, 300))
 			err := m.Run(window)
 			if err != nil {
 				log.Fatal(err)
